@@ -34,7 +34,8 @@ def validate_cwd() -> None:
                 'red'
             )
         )
-        os.exit(1)
+        # os.exit(1)
+        exit()
 
 
 # create a Click group

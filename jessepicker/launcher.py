@@ -83,6 +83,17 @@ def getmetrics(_pair, _tf, _dna, metrics, _startdate, _enddate):
     lines = metrics.splitlines()
     for index, line in enumerate(lines):
 
+        """if not 'Total Closed Trades' in line:
+            print(line)
+            # print(metrics)
+            print("Jesse error. Possibly pickle database is corrupt. Delete temp/ folder to fix.")
+            exit(1)"""
+
+        if 'Aborted!' in line:
+            print(metrics)
+            print("Aborted! error. Possibly pickle database is corrupt. Delete temp/ folder to fix.")
+            exit(1)
+
         if 'CandleNotFoundInDatabase' in line:
             print(metrics)
             exit(1)
@@ -171,7 +182,6 @@ def runtest(_start_date, _finish_date, _pair, _tf, _dnaid):
     (output, err) = process.communicate()
     exit_code = process.wait()
     res = output.decode('utf-8')
-
     # print(res)
     return getmetrics(_pair, _tf, _dnaid, res, _start_date, _finish_date)
 
@@ -191,9 +201,9 @@ def signal_handler(sig, frame):
     import sys
     sys.exit(0)
 
+
 def run(_start_date, _finish_date):
     import signal
-
 
     signal.signal(signal.SIGINT, signal_handler)
     # print('Press Ctrl+C')
@@ -261,7 +271,9 @@ def run(_start_date, _finish_date):
         # makestrat(_strat=strategy, _key=key, _dna=dnaindex)
 
         # Run jesse backtest and grab console output
+        # print(_start_date, _finish_date, pair, timeframe, dnac[0])
         ress = runtest(_start_date=_start_date, _finish_date=_finish_date, _pair=pair, _tf=timeframe, _dnaid=dnac[0])
+        # print(ress)
         if ress not in results:
             results.append(ress)
 
