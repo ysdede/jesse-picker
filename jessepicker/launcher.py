@@ -10,9 +10,16 @@ from time import gmtime
 from jesse.helpers import get_config
 
 jessepickerdir = 'jessepickerdata'
+anchor = '(╯°□°)╯︵ ┻━┻'
 
 def make_routes(_template, dna_code):
-    _template = _template.replace('(╯°□°)╯︵ ┻━┻', dna_code)
+    global anchor
+    if anchor not in _template:
+        os.system('color')
+        print('\nPlease replace the dna strings in routes.py with anchors. eg:\n')
+        print("""(\033[32m'Binance Futures', 'ETH-USDT', '15m', 'noStra', '(╯°□°)╯︵ ┻━┻'\033[0m),\n""")
+        exit()
+    _template = _template.replace(anchor, dna_code)
 
     if os.path.exists('routes.py'):
         os.remove('routes.py')

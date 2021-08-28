@@ -5,7 +5,6 @@ setup(
     version='0.1',
     install_requires=[
         'Click',
-        'jesse'
     ],
     entry_points='''
         [console_scripts]
