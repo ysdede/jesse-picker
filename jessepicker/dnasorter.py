@@ -153,7 +153,7 @@ def sortdnas(inputfile: str, _stratname: str, stratclass, _top: int = 25, _rng: 
 
         # print('encoded:', hyperparameters)
         dd.append(hyperparameters)
-        f.write(str(dd).replace("""['""", """[r'""") + ',\n')
+        f.write(str(dd).replace("""\n['""", """\n[r'""") + ',\n')
 
     f.write(']\n')
     f.flush()
