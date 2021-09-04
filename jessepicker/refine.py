@@ -202,7 +202,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
-def run(_start_date, _finish_date):
+def run(dna_file, _start_date, _finish_date):
     import signal
 
     signal.signal(signal.SIGINT, signal_handler)
@@ -252,7 +252,11 @@ def run(_start_date, _finish_date):
     f = open(logfilename, 'w', encoding = 'utf-8')
     f.write(str(headerforfiles) + '\n')
 
-    dnasmodule = importlib.import_module(f'{jessepickerdir}.dnafiles.{strategy}dnas')
+    # dnasmodule = importlib.import_module(f'{jessepickerdir}.dnafiles.{strategy}dnas')
+    module_name = dna_file.replace('\\', '.').replace('.py', '')
+    module_name = module_name.replace('/', '.').replace('.py', '')
+    print(module_name)
+    dnasmodule = importlib.import_module(module_name)
     dnas = dnasmodule.dnas
 
     lendnas = len(dnas)
@@ -280,7 +284,7 @@ def run(_start_date, _finish_date):
         # print(ress)
         f.write(str(ress) + '\n')
         f.flush()
-        sortedresults = sorted(results, key=lambda x: float(x[10]), reverse=True)
+        sortedresults = sorted(results, key=lambda x: float(x[11]), reverse=True)
 
         clearConsole()
         rt = ((timer() - start) / index) * (lendnas - index)
@@ -316,8 +320,8 @@ def run(_start_date, _finish_date):
 
     # Rewrite dnas.py, sorted by calmar
 
-    dnafilename = f'{jessepickerdir}/dnafiles/{strategy}dnas.py'
-
+    # dnafilename = f'{jessepickerdir}/dnafiles/{filename}'
+    dnafilename = f'{jessepickerdir}/dnafiles/{pair} {_start_date} {_finish_date}.py'
     if os.path.exists(dnafilename):
         os.remove(dnafilename)
 

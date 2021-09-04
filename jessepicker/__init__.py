@@ -118,9 +118,10 @@ def random(start_date: str, finish_date: str, iterations: int, days: int) -> Non
 
 
 @cli.command()
+@click.argument('dna_file', required=True, type=str)
 @click.argument('start_date', required=True, type=str)
 @click.argument('finish_date', required=True, type=str)
-def refine(start_date: str, finish_date: str) -> None:
+def refine(dna_file, start_date: str, finish_date: str) -> None:
     """
     backtest all candidate dnas. Enter in "YYYY-MM-DD" "YYYY-MM-DD"
     """
@@ -129,10 +130,10 @@ def refine(start_date: str, finish_date: str) -> None:
 
     from jesse.routes import router
     import jesse.helpers as jh
-    from jessepicker.launcher import run
+    from jessepicker.refine import run
     validateconfig()
     makedirs()
-    run(_start_date=start_date, _finish_date=finish_date)
+    run(dna_file, _start_date=start_date, _finish_date=finish_date)
 
 
 def makedirs():
