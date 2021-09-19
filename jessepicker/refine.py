@@ -12,6 +12,7 @@ from jesse.helpers import get_config
 jessepickerdir = 'jessepickerdata'
 anchor = '(╯°□°)╯︵ ┻━┻'
 
+
 def make_routes(_template, dna_code):
     global anchor
     if anchor not in _template:
@@ -19,36 +20,40 @@ def make_routes(_template, dna_code):
         print('\nPlease replace the dna strings in routes.py with anchors. eg:\n')
         print("""(\033[32m'Binance Futures', 'ETH-USDT', '15m', 'noStra', '(╯°□°)╯︵ ┻━┻'\033[0m),\n""")
         exit()
-    _template = _template.replace(anchor, dna_code)
+    # print(dna_code, 'dna code')
+    _template = _template.replace("'"+anchor+"'", repr(dna_code))
 
     if os.path.exists('routes.py'):
         os.remove('routes.py')
 
-    f = open('routes.py', 'w', encoding = 'utf-8')
+    f = open('routes.py', 'w', encoding='utf-8')
     f.write(_template)
     f.flush()
     os.fsync(f.fileno())
     f.close()
 
+
 def write_file(_fn, _body):
     if os.path.exists(_fn):
         os.remove(_fn)
 
-    f = open(_fn, 'w', encoding = 'utf-8')
+    f = open(_fn, 'w', encoding='utf-8')
     f.write(_body)
     f.flush()
     os.fsync(f.fileno())
     f.close()
 
+
 def read_file(_file):
-    ff = open(_file, 'r', encoding = 'utf-8')
+    ff = open(_file, 'r', encoding='utf-8')
     _body = ff.read()
     ff.close()
     return _body
 
+
 def makestrat(_strat, _key, _dna):
     stratfile = f'strategies\\{_strat}\\__init__.py'
-    ff = open(stratfile, 'r', encoding = 'utf-8')
+    ff = open(stratfile, 'r', encoding='utf-8')
     stratbody = ff.read()
     ff.close()
 
@@ -56,7 +61,7 @@ def makestrat(_strat, _key, _dna):
         os.remove(stratfile)
         # print('Removed old strat file!')
 
-    newf = open(stratfile, 'w', encoding = 'utf-8')
+    newf = open(stratfile, 'w', encoding='utf-8')
 
     for _line in stratbody.splitlines():
         if _key in _line:
@@ -249,7 +254,7 @@ def run(dna_file, _start_date, _finish_date):
 
     reportfilename = f'{jessepickerdir}/results/{filename}--{ts}.csv'
     logfilename = f'{jessepickerdir}/logs/{filename}--{ts}.log'
-    f = open(logfilename, 'w', encoding = 'utf-8')
+    f = open(logfilename, 'w', encoding='utf-8')
     f.write(str(headerforfiles) + '\n')
 
     # dnasmodule = importlib.import_module(f'{jessepickerdir}.dnafiles.{strategy}dnas')
@@ -311,7 +316,7 @@ def run(dna_file, _start_date, _finish_date):
 
     # Create csv report
     # TODO: Pick better csv escape character, standart ',' fails sometimes
-    f = open(reportfilename, 'w', encoding = 'utf-8')
+    f = open(reportfilename, 'w', encoding='utf-8')
     f.write(str(headerforfiles).replace('[', '').replace(']', '').replace(' ', '') + '\n')
     for srline in sortedresults:
         f.write(str(srline).replace('[', '').replace(']', '').replace(' ', '') + '\n')
@@ -325,7 +330,7 @@ def run(dna_file, _start_date, _finish_date):
     if os.path.exists(dnafilename):
         os.remove(dnafilename)
 
-    f = open(dnafilename, 'w', encoding = 'utf-8')
+    f = open(dnafilename, 'w', encoding='utf-8')
     f.write('dnas = [\n')
 
     sorteddnas = []
@@ -335,7 +340,8 @@ def run(dna_file, _start_date, _finish_date):
             if srr[2] == dnac[0]:
                 # f.write(str(dnac) + ',\n')
                 # f.write(str(dnac).replace("""['""", """[r'""") + ',\n')
-                f.write(str(dnac).replace("""\n['""", """\n[r'""") + ',\n')
+                # f.write(str(dnac).replace("""\n['""", """\n[r'""") + ',\n')
+                f.write(str(dnac) + ',\n')
                 # sorteddnas.append(dnac)
 
     f.write(']\n')
