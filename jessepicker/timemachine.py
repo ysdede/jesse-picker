@@ -1,17 +1,18 @@
 import os
 import random
-from subprocess import Popen, PIPE
-from jesse.routes import router
-from datetime import timedelta
 from datetime import datetime
-from timeit import default_timer as timer
-from time import strftime
+from datetime import timedelta
+from subprocess import Popen, PIPE
 from time import gmtime
-# from jessepicker.pairs import pairs
-from jesse.config import config
+from time import strftime
+from timeit import default_timer as timer
+
 import jesse.helpers as jh
+from jesse.config import config
+from jesse.routes import router
 
 jessepickerdir = 'jessepickerdata'
+
 
 def split(_str):
     _ll = _str.split(' ')
@@ -28,8 +29,7 @@ def getmetrics(_pair, _tf, metrics, _startdate, _enddate):
     for index, line in enumerate(lines):
 
         if 'CandleNotFoundInDatabase' in line:
-            print(metrics)
-            exit(1)
+            return [_pair, _tf, _startdate, _enddate, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         if 'Uncaught Exception' in line:
             print(metrics)
@@ -198,7 +198,7 @@ def run(_start_date, _finish_date, _iterations, _width):
     print('rand end as int:', rand_end.days)
     print('rand_end', rand_end)
     diff = (since - rand_end).days
-    print('Period:', diff,  'days')
+    print('Period:', diff, 'days')
 
     csvheader = ['Pair', 'TF', 'Start Date', 'End Date', 'Total Trades', 'Total Net Profit', 'Max.DD',
                  'Annual Profit', 'Winrate',

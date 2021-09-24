@@ -1,8 +1,8 @@
-import os
 import importlib
-from jesse.routes import router
-import jesse.helpers as jh
+import os
 
+import jesse.helpers as jh
+from jesse.routes import router
 
 jessepickerdir = 'jessepickerdata'
 
@@ -50,7 +50,6 @@ def picklines(_body, _limit: int = 0):
 
 
 def sortdnas(inputfile: str, _stratname: str, stratclass, _top: int = 25, _rng: int = 100, _criteria: str = 'pnl1'):
-
     a = readlog(inputfile)  # TODO: Take input from args
     rows = picklines(a)
 
@@ -110,7 +109,7 @@ def sortdnas(inputfile: str, _stratname: str, stratclass, _top: int = 25, _rng: 
 
     for __dna in toppnl1:
         # print(sortedbypnl2[i])
-        if __dna not in besties:   # and __dna in toppnl2:  # and __dna in topwr1:  # and sortedbypnl2[i] in topwr1 and sortedbypnl2[i] in topwr2:
+        if __dna not in besties:  # and __dna in toppnl2:  # and __dna in topwr1:  # and sortedbypnl2[i] in topwr1 and sortedbypnl2[i] in topwr2:
             besties.append(__dna)
             # print(__dna)
 
@@ -148,7 +147,8 @@ def sortdnas(inputfile: str, _stratname: str, stratclass, _top: int = 25, _rng: 
         hyperparameters = jh.dna_to_hp(stratclass.hyperparameters(None),
                                        dnastr)  # routes_moded.run(dnastr, dna=True, _ret=True)
         if not hyperparameters:
-            print('Could not decode dnas! Please check strategy name in routes.py file.\nCheck strategy file for hyperparameters definition! Bye.')
+            print(
+                'Could not decode dnas! Please check strategy name in routes.py file.\nCheck strategy file for hyperparameters definition! Bye.')
             exit()
 
         # print('encoded:', hyperparameters)

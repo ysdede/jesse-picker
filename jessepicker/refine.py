@@ -1,13 +1,12 @@
 import importlib
 import os
-from subprocess import Popen, PIPE
-from jesse.routes import router
 from datetime import datetime
-from datetime import timedelta
-from timeit import default_timer as timer
-from time import strftime
+from subprocess import Popen, PIPE
 from time import gmtime
-from jesse.helpers import get_config
+from time import strftime
+from timeit import default_timer as timer
+
+from jesse.routes import router
 
 jessepickerdir = 'jessepickerdata'
 anchor = '(╯°□°)╯︵ ┻━┻'
@@ -21,7 +20,7 @@ def make_routes(_template, dna_code):
         print("""(\033[32m'Binance Futures', 'ETH-USDT', '15m', 'noStra', '(╯°□°)╯︵ ┻━┻'\033[0m),\n""")
         exit()
     # print(dna_code, 'dna code')
-    _template = _template.replace("'"+anchor+"'", repr(dna_code))
+    _template = _template.replace("'" + anchor + "'", repr(dna_code))
 
     if os.path.exists('routes.py'):
         os.remove('routes.py')
