@@ -135,6 +135,26 @@ def refine(dna_file, start_date: str, finish_date: str) -> None:
     makedirs()
     run(dna_file, _start_date=start_date, _finish_date=finish_date)
 
+# ///
+@cli.command()
+@click.argument('start_date', required=True, type=str)
+@click.argument('finish_date', required=True, type=str)
+def testpairs(start_date: str, finish_date: str) -> None:
+    """
+    backtest all candidate pairs. Enter in "YYYY-MM-DD" "YYYY-MM-DD"
+    """
+    os.chdir(os.getcwd())
+    validate_cwd()
+
+    from jesse.routes import router
+    import jesse.helpers as jh
+    from jessepicker.testpairs import run
+    validateconfig()
+    makedirs()
+    run(_start_date=start_date, _finish_date=finish_date)
+
+# ///
+
 
 def makedirs():
     jessepickerdir = 'jessepickerdata'
@@ -143,6 +163,7 @@ def makedirs():
     os.makedirs(f'./{jessepickerdir}/results', exist_ok=True)
     os.makedirs(f'./{jessepickerdir}/logs', exist_ok=True)
     os.makedirs(f'./{jessepickerdir}/dnafiles', exist_ok=True)
+    os.makedirs(f'./{jessepickerdir}/pairfiles', exist_ok=True)
 
 
 def validateconfig():  # TODO Modify config without user interaction!
