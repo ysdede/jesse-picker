@@ -20,7 +20,7 @@ def make_routes(template, symbol):
         print('\nPlease replace the symbol strings in routes.py with anchors. eg:\n')
         print("""(\033[32m'FTX Futures', 'ANCHOR!', '15m', 'noStra'\033[0m),\n""")
         exit()
-    # print(dna_code, 'dna code')
+
     template = template.replace(anchor, symbol)
 
     if os.path.exists('routes.py'):
@@ -51,29 +51,6 @@ def read_file(_file):
     return _body
 
 
-def makestrat(_strat, _key, _dna):
-    stratfile = f'strategies\\{_strat}\\__init__.py'
-    ff = open(stratfile, 'r', encoding='utf-8')
-    stratbody = ff.read()
-    ff.close()
-
-    if os.path.exists(stratfile):
-        os.remove(stratfile)
-        # print('Removed old strat file!')
-
-    newf = open(stratfile, 'w', encoding='utf-8')
-
-    for _line in stratbody.splitlines():
-        if _key in _line:
-            newf.write(f'        self.dnaindex = {str(_dna)}  # !ChangeIt!\n')
-        else:
-            newf.write(_line + '\n')
-
-    newf.flush()
-    os.fsync(newf.fileno())
-    newf.close()
-
-
 def split(_str):
     _ll = _str.split(' ')
     _r = _ll[len(_ll) - 1].replace('%', '')
@@ -88,12 +65,6 @@ def getmetrics(_pair, _tf, _dna, metrics, _startdate, _enddate):
     lines = metrics.splitlines()
     for index, line in enumerate(lines):
 
-        """if not 'Total Closed Trades' in line:
-            print(line)
-            # print(metrics)
-            print("Jesse error. Possibly pickle database is corrupt. Delete temp/ folder to fix.")
-            exit(1)"""
-
         if 'Aborted!' in line:
             print(metrics)
             print("Aborted! error. Possibly pickle database is corrupt. Delete temp/ folder to fix.")
@@ -101,7 +72,7 @@ def getmetrics(_pair, _tf, _dna, metrics, _startdate, _enddate):
 
         if 'CandleNotFoundInDatabase' in line:
             print(metrics)
-            exit(1)
+            return [_pair, _tf, _dna, _startdate, _enddate, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         if 'Uncaught Exception' in line:
             print(metrics)
@@ -204,19 +175,14 @@ def run(_start_date, _finish_date):
     import signal
 
     signal.signal(signal.SIGINT, signal_handler)
-    # print('Press Ctrl+C')
-    # signal.pause()
 
-    # Starts here
     results = []
-    resultswithoutdna = []
     sortedresults = []
 
     r = router.routes[0]  # Read first route from routes.py
     exchange = r.exchange
     pair = r.symbol
     timeframe = r.timeframe
-    strategy = r.strategy_name
 
     headerforfiles = ['Pair', 'TF', 'Dna', 'Start Date', 'End Date', 'Total Trades', 'Total Net Profit', 'Max.DD',
                       'Annual Profit', 'Winrate',
@@ -245,7 +211,6 @@ def run(_start_date, _finish_date):
     f = open(logfilename, 'w', encoding='utf-8')
     f.write(str(headerforfiles) + '\n')
 
-    # dnasmodule = importlib.import_module(f'{jessepickerdir}.dnafiles.{strategy}dnas')
 
     print('Please wait while loading candles...')
 
@@ -254,21 +219,18 @@ def run(_start_date, _finish_date):
     routes_template = read_file('routes.py')
     num_of_pairs = len(ftx_pairs)
     start = timer()
-    # for index, dnac in enumerate(dnas, start=1):
+
     for index, pair in enumerate(ftx_pairs, start=1):
-        # print(dnac[0])
-        # Inject dna to routes.py
         make_routes(routes_template, pair)
-        # makestrat(_strat=strategy, _key=key, _dna=dnaindex)
 
         # Run jesse backtest and grab console output
-        # print(_start_date, _finish_date, pair, timeframe, dnac[0])
+
         ress = runtest(_start_date=_start_date, _finish_date=_finish_date, _pair=pair, _tf=timeframe, symbol=pair)
-        # print(ress)
+
         if ress not in results:
             results.append(ress)
 
-        # print(ress)
+
         f.write(str(ress) + '\n')
         f.flush()
         sortedresults = sorted(results, key=lambda x: float(x[11]), reverse=True)
