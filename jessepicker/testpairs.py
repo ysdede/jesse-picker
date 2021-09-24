@@ -211,7 +211,6 @@ def run(_start_date, _finish_date):
     f = open(logfilename, 'w', encoding='utf-8')
     f.write(str(headerforfiles) + '\n')
 
-
     print('Please wait while loading candles...')
 
     # Read routes.py as template
@@ -229,7 +228,6 @@ def run(_start_date, _finish_date):
 
         if ress not in results:
             results.append(ress)
-
 
         f.write(str(ress) + '\n')
         f.flush()

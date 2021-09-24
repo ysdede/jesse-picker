@@ -7,7 +7,7 @@ from datetime import datetime
 from timeit import default_timer as timer
 from time import strftime
 from time import gmtime
-from jessepicker.pairs import pairs
+# from jessepicker.pairs import pairs
 from jesse.config import config
 import jesse.helpers as jh
 
