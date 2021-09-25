@@ -8,6 +8,9 @@ import jesse.helpers as jh
 from jesse.helpers import get_config
 
 # Python version validation.
+from jessepicker import timemachine
+from jessepicker.dnasorter import sortdnas, valideoutputfile
+
 if jh.python_version() < 3.7:
     print(
         jh.color(
@@ -54,7 +57,7 @@ def pick(dnalogfile: str, sortcriteria: str, len1: int, len2: int) -> None:
     """
     Picks dnas from Jesse optimization log file
     """
-
+    print('Modded')
     os.chdir(os.getcwd())
     validate_cwd()
 
@@ -67,7 +70,7 @@ def pick(dnalogfile: str, sortcriteria: str, len1: int, len2: int) -> None:
 
     from jesse.routes import router
     import jesse.helpers as jh
-    from jessepicker.dnasorter import sortdnas, valideoutputfile
+    # from jessepicker.dnasorter import sortdnas, valideoutputfile
 
     makedirs()
     r = router.routes[0]  # Read first route from routes.py
@@ -96,7 +99,7 @@ def random(start_date: str, finish_date: str, iterations: int, days: int) -> Non
     validateconfig()
     from jesse.routes import router
     import jesse.helpers as jh
-    from jessepicker.timemachine import run
+
     r = router.routes[0]  # Read first route from routes.py
     timeframe = r.timeframe
 
@@ -114,7 +117,7 @@ def random(start_date: str, finish_date: str, iterations: int, days: int) -> Non
     width = (24 / (jh.timeframe_to_one_minutes(timeframe) / 60)) * days
 
     makedirs()
-    run(_start_date=start_date, _finish_date=finish_date, _iterations=iterations, _width=width)
+    timemachine.run(_start_date=start_date, _finish_date=finish_date, _iterations=iterations, _width=width)
 
 
 @cli.command()
