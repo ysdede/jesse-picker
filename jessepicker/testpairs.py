@@ -1,13 +1,14 @@
 import os
 from datetime import datetime
 from subprocess import Popen, PIPE
-from time import gmtime
+from time import gmtime, sleep
 from time import strftime
 from timeit import default_timer as timer
 
 from jesse.routes import router
 
-from pairs import ftx_pairs
+# from pairs import ftx_pairs
+from .pairs import ftx_pairs
 
 jessepickerdir = 'jessepickerdata'
 anchor = 'ANCHOR!'
@@ -70,7 +71,7 @@ def getmetrics(_pair, _tf, _dna, metrics, _startdate, _enddate):
             print("Aborted! error. Possibly pickle database is corrupt. Delete temp/ folder to fix.")
             exit(1)
 
-        if 'CandleNotFoundInDatabase' in line:
+        if 'CandleNotFoundInDatabase:' in line:
             print(metrics)
             return [_pair, _tf, _dna, _startdate, _enddate, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -157,7 +158,7 @@ def runtest(_start_date, _finish_date, _pair, _tf, symbol):
     process = Popen(['jesse', 'backtest', _start_date, _finish_date], stdout=PIPE)
     (output, err) = process.communicate()
     exit_code = process.wait()
-    res = output.decode('utf-8')
+    res = output.decode('utf-8', errors='ignore')
     # print(res)
     return getmetrics(_pair, _tf, symbol, res, _start_date, _finish_date)
 
