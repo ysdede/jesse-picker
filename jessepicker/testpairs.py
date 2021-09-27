@@ -7,8 +7,6 @@ from timeit import default_timer as timer
 
 from jesse.routes import router
 
-# from pairs import ftx_pairs
-from .pairs import ftx_pairs
 
 jessepickerdir = 'jessepickerdata'
 anchor = 'ANCHOR!'
@@ -217,10 +215,34 @@ def run(_start_date, _finish_date):
     # Read routes.py as template
     global routes_template
     routes_template = read_file('routes.py')
-    num_of_pairs = len(ftx_pairs)
+    pairs_list = None
+
+    # try:
+    #     import pairs
+    # except:
+    #     print('Can not import pairs!')
+    #     exit()
+    import jessepicker.pairs
+
+    if exchange == 'Binance Futures':
+        pairs_list = jessepicker.pairs.binance_perp_pairs
+        print('Binance Futures detected!')
+    elif exchange == 'FTX Futures':
+        pairs_list = jessepicker.pairs.ftx_perp_pairs
+        print('FTX Futures detected!')
+    else:
+        print('Unsupported exchange or broken routes file! Exchange = ', exchange)
+        exit()
+
+    if not pairs_list:
+        print('pairs_list is empty!')
+        exit()
+
+    num_of_pairs = len(pairs_list)
+
     start = timer()
 
-    for index, pair in enumerate(ftx_pairs, start=1):
+    for index, pair in enumerate(pairs_list, start=1):
         make_routes(routes_template, pair)
 
         # Run jesse backtest and grab console output
@@ -276,7 +298,7 @@ def run(_start_date, _finish_date):
 
     sorteddnas = []
     for srr in sortedresults:
-        for pair in ftx_pairs:
+        for pair in pairs_list:
             # print(srr[2], dnac[0], 'DNAC:', dnac)
             if srr[2] == pair[0]:
                 # f.write(str(dnac) + ',\n')
