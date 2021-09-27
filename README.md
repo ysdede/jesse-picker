@@ -8,10 +8,9 @@ cd into project
 pip install -e .
 ```
 
-
 # Usage  
 
-You can use ewoexitrt strategy to test this tool.
+You can use [ewoexit2rt](https://github.com/ysdede/jesse_strategies/tree/master/ewoexit2rt)  strategy to test this tool.
 
 # jesse-picker pick
 ### Picking best dnas from log file
