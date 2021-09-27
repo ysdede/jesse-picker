@@ -1,4 +1,4 @@
-# jesse-picker, a tool kit for picking, refineing dnas and performing random tests.
+# jesse-picker, a tool kit for picking, refining dnas and performing random tests.
 
 ## Installation
 
