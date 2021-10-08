@@ -289,3 +289,42 @@ binance_perp_pairs = [
     "DEFI-USDT",
     "BTCDOM-USDT"
 ]
+
+# Binance Spot mature symbols
+binance_spot_pairs = [
+    "BTC-USDT",
+    "ETH-USDT",
+    "FTM-USDT",
+    "ADA-USDT",
+    "XRP-USDT",
+    "BNB-USDT",
+    "LINK-USDT",
+    "LTC-USDT",
+    "EOS-USDT",
+    "MATIC-USDT",
+    "ETC-USDT",
+    "OMG-USDT",
+    "TRX-USDT",
+    "THETA-USDT",
+    "VET-USDT",
+    "XLM-USDT",
+    "WAVES-USDT",
+    "XMR-USDT",
+    "ICX-USDT",
+    "NEO-USDT",
+    "ZEC-USDT",
+    "IOTA-USDT",
+    "QTUM-USDT",
+    "DASH-USDT",
+    "ONT-USDT",
+    "NULS-USDT",
+    "BTT-USDT",
+    "HOT-USDT",
+    "ZIL-USDT",
+    "ZRX-USDT",
+    "BAT-USDT",
+    "CELR-USDT",
+    "NANO-USDT",
+    "ENJ-USDT",
+]
+

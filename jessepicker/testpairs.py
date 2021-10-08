@@ -1,12 +1,11 @@
 import os
 from datetime import datetime
 from subprocess import Popen, PIPE
-from time import gmtime, sleep
+from time import gmtime
 from time import strftime
 from timeit import default_timer as timer
 
 from jesse.routes import router
-
 
 jessepickerdir = 'jessepickerdata'
 anchor = 'ANCHOR!'
@@ -71,14 +70,14 @@ def getmetrics(_pair, _tf, _dna, metrics, _startdate, _enddate):
 
         if 'CandleNotFoundInDatabase:' in line:
             print(metrics)
-            return [_pair, _tf, _dna, _startdate, _enddate, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            return [_pair, _tf, _dna, _startdate, _enddate, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         if 'Uncaught Exception' in line:
             print(metrics)
             exit(1)
 
         if 'No trades were made' in line:
-            return [_pair, _tf, _dna, _startdate, _enddate, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            return [_pair, _tf, _dna, _startdate, _enddate, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         if 'Total Closed Trades' in line:
             a = split(line)
@@ -114,6 +113,11 @@ def getmetrics(_pair, _tf, _dna, metrics, _startdate, _enddate):
             a = split(line)
             metr.append(a)
             # print('Calmar Ratio:', a)
+
+        if 'Serenity Index' in line:
+            a = split(line)
+            metr.append(a)
+            # print('Serenity:', a)
 
         if 'Winning Streak' in line:
             a = split(line)
@@ -185,18 +189,18 @@ def run(_start_date, _finish_date):
 
     headerforfiles = ['Pair', 'TF', 'Dna', 'Start Date', 'End Date', 'Total Trades', 'Total Net Profit', 'Max.DD',
                       'Annual Profit', 'Winrate',
-                      'Sharpe', 'Calmar', 'Winning Strike', 'Losing Strike', 'Largest Winning', 'Largest Losing',
+                      'Sharpe', 'Calmar', 'Serenity', 'Winning Strike', 'Losing Strike', 'Largest Winning', 'Largest Losing',
                       'Num. of Wins', 'Num. of Loses',
                       'Market Change']
 
     header1 = ['Pair', 'TF', 'Dna', 'Start Date', 'End Date', 'Total', 'Total Net', 'Max.', 'Annual', 'Win',
-               'Sharpe', 'Calmar', 'Winning', 'Losing', 'Largest', 'Largest', 'Winning', 'Losing',
+               'Sharpe', 'Calmar', 'Serenity', 'Winning', 'Losing', 'Largest', 'Largest', 'Winning', 'Losing',
                'Market']
     header2 = [' ', ' ', ' ', '   ', '   ', 'Trades', 'Profit %', 'DD %', 'Return %', 'Rate %',
-               'Ratio', 'Ratio', 'Streak', 'Streak', 'Win. Trade', 'Los. Trade', 'Trades', 'Trades',
+               'Ratio', 'Ratio', 'Index', 'Streak', 'Streak', 'Win. Trade', 'Los. Trade', 'Trades', 'Trades',
                'Change %']
 
-    formatter = '{: <10} {: <5} {: <12} {: <12} {: <12} {: <6} {: <12} {: <8} {: <10} {: <8} {: <8} {: <12} {: <8} {: <8} ' \
+    formatter = '{: <10} {: <5} {: <12} {: <12} {: <12} {: <6} {: <12} {: <8} {: <10} {: <8} {: <8} {: <12} {: <10} {: <8} {: <8} ' \
                 '{: <12} {: <12} {: <10} {: <10} {: <12}'
 
     clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
@@ -217,19 +221,23 @@ def run(_start_date, _finish_date):
     routes_template = read_file('routes.py')
     pairs_list = None
 
-    # try:
-    #     import pairs
-    # except:
-    #     print('Can not import pairs!')
-    #     exit()
-    import jessepicker.pairs
+    try:
+        import jessepicker.pairs
+    except:
+        print('Can not import pairs!')
+        exit()
 
     if exchange == 'Binance Futures':
         pairs_list = jessepicker.pairs.binance_perp_pairs
-        print('Binance Futures detected!')
+        print('Binance Futures all symbols')
+
+    elif exchange == 'Binance':
+        pairs_list = jessepicker.pairs.binance_spot_pairs
+        print('Binance Spot symbols')
+
     elif exchange == 'FTX Futures':
         pairs_list = jessepicker.pairs.ftx_perp_pairs
-        print('FTX Futures detected!')
+        print('FTX Futures all symbols!')
     else:
         print('Unsupported exchange or broken routes file! Exchange = ', exchange)
         exit()
@@ -254,7 +262,7 @@ def run(_start_date, _finish_date):
 
         f.write(str(ress) + '\n')
         f.flush()
-        sortedresults = sorted(results, key=lambda x: float(x[11]), reverse=True)
+        sortedresults = sorted(results, key=lambda x: float(x[12]), reverse=True)
 
         clearConsole()
         rt = ((timer() - start) / index) * (num_of_pairs - index)

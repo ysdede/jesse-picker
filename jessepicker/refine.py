@@ -85,6 +85,9 @@ def split(_str):
 def getmetrics(_pair, _tf, _dna, metrics, _startdate, _enddate):
     metr = [_pair, _tf, _dna, _startdate, _enddate]
     lines = metrics.splitlines()
+
+    print(metrics)
+
     for index, line in enumerate(lines):
 
         """if not 'Total Closed Trades' in line:
@@ -107,7 +110,7 @@ def getmetrics(_pair, _tf, _dna, metrics, _startdate, _enddate):
             exit(1)
 
         if 'No trades were made' in line:
-            return [_pair, _tf, _dna, _startdate, _enddate, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            return [_pair, _tf, _dna, _startdate, _enddate, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         if 'Total Closed Trades' in line:
             a = split(line)
@@ -142,6 +145,12 @@ def getmetrics(_pair, _tf, _dna, metrics, _startdate, _enddate):
         if 'Calmar Ratio' in line:
             a = split(line)
             metr.append(a)
+            # print('Calmar Ratio:', a)
+
+        if 'Serenity Index' in line:
+            a = split(line)
+            metr.append(a)
+        # else: metr.append(0)
             # print('Calmar Ratio:', a)
 
         if 'Winning Streak' in line:
@@ -231,18 +240,18 @@ def run(dna_file, _start_date, _finish_date):
 
     headerforfiles = ['Pair', 'TF', 'Dna', 'Start Date', 'End Date', 'Total Trades', 'Total Net Profit', 'Max.DD',
                       'Annual Profit', 'Winrate',
-                      'Sharpe', 'Calmar', 'Winning Strike', 'Losing Strike', 'Largest Winning', 'Largest Losing',
+                      'Sharpe', 'Calmar', 'Serenity', 'Winning Strike', 'Losing Strike', 'Largest Winning', 'Largest Losing',
                       'Num. of Wins', 'Num. of Losses',
                       'Market Change']
 
     header1 = ['Pair', 'TF', 'Dna', 'Start Date', 'End Date', 'Total', 'Total Net', 'Max.', 'Annual', 'Win',
-               'Sharpe', 'Calmar', 'Winning', 'Losing', 'Largest', 'Largest', 'Winning', 'Losing',
+               'Sharpe', 'Calmar', 'Serenity', 'Winning', 'Losing', 'Largest', 'Largest', 'Winning', 'Losing',
                'Market']
     header2 = [' ', ' ', ' ', '   ', '   ', 'Trades', 'Profit %', 'DD %', 'Return %', 'Rate %',
-               'Ratio', 'Ratio', 'Streak', 'Streak', 'Win. Trade', 'Los. Trade', 'Trades', 'Trades',
+               'Ratio', 'Ratio', 'Index', 'Streak', 'Streak', 'Win. Trade', 'Los. Trade', 'Trades', 'Trades',
                'Change %']
 
-    formatter = '{: <10} {: <5} {: <12} {: <12} {: <12} {: <6} {: <12} {: <8} {: <10} {: <8} {: <8} {: <12} {: <8} {: <8} ' \
+    formatter = '{: <10} {: <5} {: <12} {: <12} {: <12} {: <6} {: <12} {: <8} {: <10} {: <8} {: <8} {: <12} {: <10} {: <8} {: <8} ' \
                 '{: <12} {: <12} {: <10} {: <10} {: <12}'
 
     clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
@@ -288,7 +297,7 @@ def run(dna_file, _start_date, _finish_date):
         # print(ress)
         f.write(str(ress) + '\n')
         f.flush()
-        sortedresults = sorted(results, key=lambda x: float(x[11]), reverse=True)
+        sortedresults = sorted(results, key=lambda x: float(x[12]), reverse=True)
 
         clearConsole()
         rt = ((timer() - start) / index) * (lendnas - index)
