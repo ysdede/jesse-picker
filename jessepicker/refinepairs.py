@@ -1,3 +1,4 @@
+import importlib
 import os
 from datetime import datetime
 from subprocess import Popen, PIPE
@@ -9,12 +10,11 @@ from jesse.routes import router
 
 # from jessepicker import refine
 import jessepicker.refine as refine
-import importlib
-import sys
 
 jessepickerdir = 'jessepickerdata'
 anchor = 'ANCHOR!'
 dna_anchor = '(╯°□°)╯︵ ┻━┻'
+
 
 def make_routes(template, symbol):
     global anchor
@@ -35,6 +35,7 @@ def make_routes(template, symbol):
     os.fsync(f.fileno())
     f.close()
 
+
 def make_refine_routes(_template, dna_code):
     global dna_anchor
     if dna_anchor not in _template:
@@ -53,6 +54,7 @@ def make_refine_routes(_template, dna_code):
     f.flush()
     os.fsync(f.fileno())
     f.close()
+
 
 def write_file(_fn, _body):
     if os.path.exists(_fn):
@@ -93,7 +95,7 @@ def getmetrics(_pair, _tf, _dna, metrics, _startdate, _enddate):
 
         if 'CandleNotFoundInDatabase:' in line:
             print(metrics)
-            return [_pair, _tf, _dna, _startdate, _enddate, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            return "Break!"  # [_pair, _tf, _dna, _startdate, _enddate, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         if 'Uncaught Exception' in line:
             print(metrics)
@@ -187,6 +189,7 @@ def runtest(_start_date, _finish_date, _pair, _tf, symbol):
     # print(res)
     return getmetrics(_pair, _tf, symbol, res, _start_date, _finish_date)
 
+
 def refine_runtest(_start_date, _finish_date, _pair, _tf, _dnaid):
     process = Popen(['jesse', 'backtest', _start_date, _finish_date], stdout=PIPE)
     (output, err) = process.communicate()
@@ -217,7 +220,6 @@ def run(dna_file, _start_date, _finish_date):
     exchange = r.exchange
     # pair = r.symbol
     timeframe = r.timeframe
-
 
     print('Please wait while loading candles...')
 
@@ -259,9 +261,9 @@ def run(dna_file, _start_date, _finish_date):
     for index, pair in enumerate(pairs_list, start=1):
         # Restore routes.py
         write_file('routes.py', routes_template)
-        
+
         make_routes(routes_template, pair)
-        
+
         print(pair)
         # exit()
         # Run refine on selected pair
@@ -363,7 +365,9 @@ def refine(pair, dna_file, _start_date, _finish_date):
 
         # Run jesse backtest and grab console output
         # print(_start_date, _finish_date, pair, timeframe, dnac[0])
-        ress = refine_runtest(_start_date=_start_date, _finish_date=_finish_date, _pair=pair, _tf=timeframe, _dnaid=dnac[0])
+        ress = refine_runtest(_start_date=_start_date, _finish_date=_finish_date, _pair=pair, _tf=timeframe,
+                              _dnaid=dnac[0])
+        if ress == "Break!": break
         # print(ress)
         if ress not in results:
             results.append(ress)
