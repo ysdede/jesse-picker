@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="jesse-picker",
-    version='0.32',
+    version='0.40',
     install_requires=[
         'Click',
     ],

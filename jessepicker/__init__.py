@@ -138,6 +138,29 @@ def refine(dna_file, start_date: str, finish_date: str) -> None:
     makedirs()
     run(dna_file, _start_date=start_date, _finish_date=finish_date)
 
+# // *
+@cli.command()
+@click.argument('dna_file', required=True, type=str)
+@click.argument('start_date', required=True, type=str)
+@click.argument('finish_date', required=True, type=str)
+def refinepairs(dna_file, start_date: str, finish_date: str) -> None:
+    """
+    backtest all pairs with candidate dnas. Enter full path to dnafile and enter period in "YYYY-MM-DD" "YYYY-MM-DD"
+    """
+    os.chdir(os.getcwd())
+    validate_cwd()
+
+    from jesse.routes import router
+    import jesse.helpers as jh
+
+    from jessepicker.refinepairs import run
+    validateconfig()
+    makedirs()
+    run(dna_file, _start_date=start_date, _finish_date=finish_date)
+
+# // *
+
+
 # ///
 @cli.command()
 @click.argument('start_date', required=True, type=str)
