@@ -25,52 +25,45 @@ def make_routes(_template, dna_code):
     if os.path.exists('routes.py'):
         os.remove('routes.py')
 
-    f = open('routes.py', 'w', encoding='utf-8')
-    f.write(_template)
-    f.flush()
-    os.fsync(f.fileno())
-    f.close()
+    with open('routes.py', 'w', encoding='utf-8') as f:
+        f.write(_template)
+        f.flush()
+        os.fsync(f.fileno())
 
 
 def write_file(_fn, _body):
     if os.path.exists(_fn):
         os.remove(_fn)
 
-    f = open(_fn, 'w', encoding='utf-8')
-    f.write(_body)
-    f.flush()
-    os.fsync(f.fileno())
-    f.close()
+    with open(_fn, 'w', encoding='utf-8') as f:
+        f.write(_body)
+        f.flush()
+        os.fsync(f.fileno())
 
 
 def read_file(_file):
-    ff = open(_file, 'r', encoding='utf-8')
-    _body = ff.read()
-    ff.close()
+    with open(_file, 'r', encoding='utf-8') as ff:
+        _body = ff.read()
     return _body
 
 
 def makestrat(_strat, _key, _dna):
     stratfile = f'strategies\\{_strat}\\__init__.py'
-    ff = open(stratfile, 'r', encoding='utf-8')
-    stratbody = ff.read()
-    ff.close()
-
+    with open(stratfile, 'r', encoding='utf-8') as ff:
+        stratbody = ff.read()
     if os.path.exists(stratfile):
         os.remove(stratfile)
         # print('Removed old strat file!')
 
-    newf = open(stratfile, 'w', encoding='utf-8')
+    with open(stratfile, 'w', encoding='utf-8') as newf:
+        for _line in stratbody.splitlines():
+            if _key in _line:
+                newf.write(f'        self.dnaindex = {_dna}  # !ChangeIt!\n')
+            else:
+                newf.write(_line + '\n')
 
-    for _line in stratbody.splitlines():
-        if _key in _line:
-            newf.write(f'        self.dnaindex = {str(_dna)}  # !ChangeIt!\n')
-        else:
-            newf.write(_line + '\n')
-
-    newf.flush()
-    os.fsync(newf.fileno())
-    newf.close()
+        newf.flush()
+        os.fsync(newf.fileno())
 
 
 def split(_str):
@@ -266,90 +259,84 @@ def run(dna_file, _start_date, _finish_date):
 
     reportfilename = f'{jessepickerdir}/results/{filename}--{ts}.csv'
     logfilename = f'{jessepickerdir}/logs/{filename}--{ts}.log'
-    f = open(logfilename, 'w', encoding='utf-8')
-    f.write(str(headerforfiles) + '\n')
+    with open(logfilename, 'w', encoding='utf-8') as f:
+        f.write(str(headerforfiles) + '\n')
 
-    # dnasmodule = importlib.import_module(f'{jessepickerdir}.dnafiles.{strategy}dnas')
-    module_name = dna_file.replace('\\', '.').replace('.py', '')
-    module_name = module_name.replace('/', '.').replace('.py', '')
-    print(module_name)
-    dnasmodule = importlib.import_module(module_name)
-    dnas = dnasmodule.dnas
+        # dnasmodule = importlib.import_module(f'{jessepickerdir}.dnafiles.{strategy}dnas')
+        module_name = dna_file.replace('\\', '.').replace('.py', '')
+        module_name = module_name.replace('/', '.').replace('.py', '')
+        print(module_name)
+        dnasmodule = importlib.import_module(module_name)
+        dnas = dnasmodule.dnas
 
-    lendnas = len(dnas)
+        lendnas = len(dnas)
 
-    print('Please wait while loading candles...')
+        print('Please wait while loading candles...')
 
-    # Read routes.py as template
-    global routes_template
-    routes_template = read_file('routes.py')
-    # print(routes_template)
-    # r = router.routes[0]  # Read first route from routes.py
-    # print('__dict__', router.routes.__dict__)
-    # from foo import bar
-
-
-    # sleep(5)
-    # for ii in range(1,500):
-    #     from jesse.routes import router
-    #     # r = router.routes[0]  # Read first route from routes.py
-    #     print('__dict__', router.routes[0].__dict__)
-    #     print('__dict__', rt.routes[0].__dict__)
-    #     # sleep(2)
+        # Read routes.py as template
+        global routes_template
+        routes_template = read_file('routes.py')
+        # print(routes_template)
+        # r = router.routes[0]  # Read first route from routes.py
+        # print('__dict__', router.routes.__dict__)
+        # from foo import bar
 
 
-    start = timer()
-    for index, dnac in enumerate(dnas, start=1):
-        # print(dnac[0])
-        
-        # Inject dna to routes.py
-        make_routes(routes_template, dna_code=dnac[0])
-        # makestrat(_strat=strategy, _key=key, _dna=dnaindex)
+        # sleep(5)
+        # for ii in range(1,500):
+        #     from jesse.routes import router
+        #     # r = router.routes[0]  # Read first route from routes.py
+        #     print('__dict__', router.routes[0].__dict__)
+        #     print('__dict__', rt.routes[0].__dict__)
+        #     # sleep(2)
 
-        # Run jesse backtest and grab console output
-        # print(_start_date, _finish_date, pair, timeframe, dnac[0])
-        ress = runtest(_start_date=_start_date, _finish_date=_finish_date, _pair=pair, _tf=timeframe, _dnaid=dnac[0])
-        # print(ress)
-        if ress not in results:
-            results.append(ress)
 
-        # print(ress)
-        f.write(str(ress) + '\n')
-        f.flush()
-        sortedresults = sorted(results, key=lambda x: float(x[12]), reverse=True)
+        start = timer()
+        for index, dnac in enumerate(dnas, start=1):
+            # print(dnac[0])
 
-        clearConsole()
-        rt = ((timer() - start) / index) * (lendnas - index)
-        rtformatted = strftime("%H:%M:%S", gmtime(rt))
-        print(f'{index}/{lendnas}\tRemaining Time: {rtformatted}')
+            # Inject dna to routes.py
+            make_routes(routes_template, dna_code=dnac[0])
+            # makestrat(_strat=strategy, _key=key, _dna=dnaindex)
 
-        print(
-            formatter.format(*header1))
-        print(
-            formatter.format(*header2))
-        topresults = sortedresults[0:30]
-        # print(topresults)
-        for r in topresults:
+            # Run jesse backtest and grab console output
+            # print(_start_date, _finish_date, pair, timeframe, dnac[0])
+            ress = runtest(_start_date=_start_date, _finish_date=_finish_date, _pair=pair, _tf=timeframe, _dnaid=dnac[0])
+            # print(ress)
+            if ress not in results:
+                results.append(ress)
+
+            # print(ress)
+            f.write(str(ress) + '\n')
+            f.flush()
+            sortedresults = sorted(results, key=lambda x: float(x[12]), reverse=True)
+
+            clearConsole()
+            rt = ((timer() - start) / index) * (lendnas - index)
+            rtformatted = strftime("%H:%M:%S", gmtime(rt))
+            print(f'{index}/{lendnas}\tRemaining Time: {rtformatted}')
+
             print(
-                formatter.format(*r))
-        delta = timer() - start
+                formatter.format(*header1))
+            print(
+                formatter.format(*header2))
+            topresults = sortedresults[0:30]
+            # print(topresults)
+            for r in topresults:
+                print(
+                    formatter.format(*r))
+            delta = timer() - start
 
-    # Restore routes.py
-    write_file('routes.py', routes_template)
+        # Restore routes.py
+        write_file('routes.py', routes_template)
 
-    # Sync and close log file
-    os.fsync(f.fileno())
-    f.close()
-
-    # Create csv report
-    # TODO: Pick better csv escape character, standart ',' fails sometimes
-    f = open(reportfilename, 'w', encoding='utf-8')
-    f.write(str(headerforfiles).replace('[', '').replace(']', '').replace(' ', '') + '\n')
-    for srline in sortedresults:
-        f.write(str(srline).replace('[', '').replace(']', '').replace(' ', '') + '\n')
-    os.fsync(f.fileno())
-    f.close()
-
+        # Sync and close log file
+        os.fsync(f.fileno())
+    with open(reportfilename, 'w', encoding='utf-8') as f:
+        f.write(str(headerforfiles).replace('[', '').replace(']', '').replace(' ', '') + '\n')
+        for srline in sortedresults:
+            f.write(str(srline).replace('[', '').replace(']', '').replace(' ', '') + '\n')
+        os.fsync(f.fileno())
     # Rewrite dnas.py, sorted by calmar
 
     # dnafilename = f'{jessepickerdir}/dnafiles/{filename}'
@@ -357,21 +344,20 @@ def run(dna_file, _start_date, _finish_date):
     if os.path.exists(dnafilename):
         os.remove(dnafilename)
 
-    f = open(dnafilename, 'w', encoding='utf-8')
-    f.write('dnas = [\n')
+    with open(dnafilename, 'w', encoding='utf-8') as f:
+        f.write('dnas = [\n')
 
-    sorteddnas = []
-    for srr in sortedresults:
-        for dnac in dnas:
-            # print(srr[2], dnac[0], 'DNAC:', dnac)
-            if srr[2] == dnac[0]:
-                # f.write(str(dnac) + ',\n')
-                # f.write(str(dnac).replace("""['""", """[r'""") + ',\n')
-                # f.write(str(dnac).replace("""\n['""", """\n[r'""") + ',\n')
-                f.write(str(dnac) + ',\n')
-                # sorteddnas.append(dnac)
+        sorteddnas = []
+        for srr in sortedresults:
+            for dnac in dnas:
+                # print(srr[2], dnac[0], 'DNAC:', dnac)
+                if srr[2] == dnac[0]:
+                    # f.write(str(dnac) + ',\n')
+                    # f.write(str(dnac).replace("""['""", """[r'""") + ',\n')
+                    # f.write(str(dnac).replace("""\n['""", """\n[r'""") + ',\n')
+                    f.write(str(dnac) + ',\n')
+                    # sorteddnas.append(dnac)
 
-    f.write(']\n')
-    f.flush()
-    os.fsync(f.fileno())
-    f.close()
+        f.write(']\n')
+        f.flush()
+        os.fsync(f.fileno())

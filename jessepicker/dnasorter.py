@@ -8,9 +8,8 @@ jessepickerdir = 'jessepickerdata'
 
 
 def readlog(_fn):
-    ff = open(_fn, 'r')
-    logsbody = ff.read()
-    ff.close()
+    with open(_fn, 'r') as ff:
+        logsbody = ff.read()
     return logsbody
 
 
@@ -18,11 +17,7 @@ def picklines(_body, _limit: int = 0):
     _rows = []
     lines = _body.splitlines()
 
-    if _limit != 0:
-        llines = lines[-_limit:]  # Split last n rows
-    else:
-        llines = lines
-
+    llines = lines[-_limit:] if _limit != 0 else lines
     for index, line in enumerate(llines):
         _row = []
         if '|| win-rate:' in line:
@@ -121,15 +116,15 @@ def sortdnas(inputfile: str, _stratname: str, stratclass, _top: int = 25, _rng: 
 
     sortkey = 3
     criteria = _criteria.lower()
-    if criteria == 'wr1':
-        sortkey = 1
     if criteria == 'pnl1':
         sortkey = 3
-    if criteria == 'wr2':
-        sortkey = 4
-    if criteria == 'pnl2':
+    elif criteria == 'pnl2':
         sortkey = 6
 
+    elif criteria == 'wr1':
+        sortkey = 1
+    elif criteria == 'wr2':
+        sortkey = 4
     # print(f'*{criteria}* *{sortkey}*')
     sortedbesties = sorted(besties, key=lambda x: int(x[sortkey]), reverse=True)
     # print(besties)
@@ -138,27 +133,26 @@ def sortdnas(inputfile: str, _stratname: str, stratclass, _top: int = 25, _rng: 
     dnafilename = f'{jessepickerdir}/dnafiles/{_stratname}dnas.py'
     if os.path.exists(dnafilename):
         os.remove(dnafilename)
-    f = open(dnafilename, 'w')
-    f.write('dnas = [\n')
+    with open(dnafilename, 'w') as f:
+        f.write('dnas = [\n')
 
-    for dd in sortedbesties:
-        dnastr = dd[0]
-        # print('DNASTR:', dnastr)
-        hyperparameters = jh.dna_to_hp(stratclass.hyperparameters(None),
-                                       dnastr)  # routes_moded.run(dnastr, dna=True, _ret=True)
-        if not hyperparameters:
-            print(
-                'Could not decode dnas! Please check strategy name in routes.py file.\nCheck strategy file for hyperparameters definition! Bye.')
-            exit()
+        for dd in sortedbesties:
+            dnastr = dd[0]
+            # print('DNASTR:', dnastr)
+            hyperparameters = jh.dna_to_hp(stratclass.hyperparameters(None),
+                                           dnastr)  # routes_moded.run(dnastr, dna=True, _ret=True)
+            if not hyperparameters:
+                print(
+                    'Could not decode dnas! Please check strategy name in routes.py file.\nCheck strategy file for hyperparameters definition! Bye.')
+                exit()
 
-        # print('encoded:', hyperparameters)
-        dd.append(hyperparameters)
-        f.write(str(dd).replace("""\n['""", """\n[r'""") + ',\n')
+            # print('encoded:', hyperparameters)
+            dd.append(hyperparameters)
+            f.write(str(dd).replace("""\n['""", """\n[r'""") + ',\n')
 
-    f.write(']\n')
-    f.flush()
-    os.fsync(f.fileno())
-    f.close()
+        f.write(']\n')
+        f.flush()
+        os.fsync(f.fileno())
     return sortedbesties
 
 
