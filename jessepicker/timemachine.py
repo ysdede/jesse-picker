@@ -139,14 +139,11 @@ def makerandomperiod(_width, _randomnumbers, _rand_end, _fd, _timeframe):
 
 
 def createreport(_reportfilename, _csvheader, _sortedresults):
-    # Create csv report
-    # TODO: Pick better csv escape character, standart ',' fails sometimes
-    f = open(_reportfilename, 'w')
-    f.write(str(_csvheader).replace('[', '').replace(']', '').replace(' ', '') + '\n')
-    for srline in _sortedresults:
-        f.write(str(srline).replace('[', '').replace(']', '').replace(' ', '') + '\n')
-    os.fsync(f.fileno())
-    f.close()
+    with open(_reportfilename, 'w') as f:
+        f.write(str(_csvheader).replace('[', '').replace(']', '').replace(' ', '') + '\n')
+        for srline in _sortedresults:
+            f.write(str(srline).replace('[', '').replace(']', '').replace(' ', '') + '\n')
+        os.fsync(f.fileno())
 
 
 def run(_start_date, _finish_date, _iterations, _width):
