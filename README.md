@@ -1,5 +1,5 @@
-# jesse-picker, a toolkit for picking, refining dnas and performing random tests.
-
+## jesse-picker, a toolkit for picking, refining dnas and performing random tests.
+# Please check new version at [https://github.com/ysdede/jesse-tk](https://github.com/ysdede/jesse-tk)  
 ## Installation
 
 cd into project   
